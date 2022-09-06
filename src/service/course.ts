@@ -29,9 +29,10 @@ export async function getUnCompletedCourseComponents (me: Authorization, ignoreC
       }))
     })
   )).flat();
-  
+
   const activeComponents = components.filter(component => {
-    return component.use_attendance && new Date(component.unlock_at) < now && now < new Date(component.due_at);
+    return component.use_attendance && new Date(component.unlock_at) < now && (component.due_at === null || now < new Date(component.due_at));
   });
+
   return activeComponents.filter(component => component.attendance_status === 'none');
 }
