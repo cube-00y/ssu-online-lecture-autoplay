@@ -7,17 +7,26 @@ type Props = {
 
 export async function play (context: BrowserContext, props: Props) {
   const { url, onConsole } = props;
+  // const page = await context.newPage();
+  // await page.goto(url);
+  // await page.waitForSelector('#tool_content');
+  // const firstFrame = (await (await page.$('#tool_content'))!.contentFrame())!;
+  // await firstFrame.waitForSelector('.xn-content-frame');
+  // const secondFrame = (await (await firstFrame.$('.xn-content-frame'))!.contentFrame())!;
+  // await secondFrame.waitForLoadState('load');
+  // await secondFrame.waitForSelector('.vc-front-screen-play-btn');
+  // await secondFrame.click('.vc-front-screen-play-btn');
   const page = await context.newPage();
   await page.goto(url);
-  await page.waitForSelector('#tool_content');
-  const firstFrame = (await (await page.$('#tool_content'))!.contentFrame())!;
-  await firstFrame.waitForSelector('.xn-content-frame');
-  const secondFrame = (await (await firstFrame.$('.xn-content-frame'))!.contentFrame())!;
-  await secondFrame.waitForLoadState('load');
-  await secondFrame.waitForSelector('.vc-front-screen-play-btn');
-  await secondFrame.click('.vc-front-screen-play-btn');
+  // await page.waitForSelector('#front-screen');
+  // const firstFrame = (await (await page.$('#front-screen'))!.contentFrame())!;
+  // await firstFrame.waitForSelector('.vc-front-screen-thumbnail-container');
+  // const secondFrame = (await (await firstFrame.$('.vc-front-screen-thumbnail-container'))!.contentFrame())!;
+  // await secondFrame.waitForLoadState('load');
+  // await secondFrame.waitForSelector('.vc-front-screen-play-btn');
+  await page.click('.vc-front-screen-play-btn');
   try {
-    await (await secondFrame.$('.vc-pctrl-volume-btn:not(.muted)'))?.click();
+    await (await page.$('.vc-pctrl-volume-btn:not(.muted)'))?.click();
   } catch {}
   page.on('dialog', async dialog => await dialog.accept());
   page.on('console', async message => {
@@ -33,7 +42,7 @@ export async function play (context: BrowserContext, props: Props) {
   onConsole && await page.exposeFunction('onConsole', onConsole);
   while (1) {
     try {
-      await secondFrame.evaluate(() => {
+      await page.evaluate(() => {
         return new Promise<void>((resolve, reject) => {
             function progressStart () {
               // Check currentTime from seek thumb style mutation
@@ -56,7 +65,7 @@ export async function play (context: BrowserContext, props: Props) {
                 attributes: true
               });
             }
-    
+
             // Check intro is pass from playProgress should move
             const introMutation = new MutationObserver(() => {
               onConsole?.({ type: 'intro' });
@@ -66,7 +75,7 @@ export async function play (context: BrowserContext, props: Props) {
             introMutation.observe(document.querySelector('.vc-pctrl-play-progress')!, {
               attributes: true
             });
-           
+
             // Check resolve from retry screen is opened
             const retryContainer = document.querySelector('#player-center-control') as HTMLDivElement;
             const retryMutation = new MutationObserver(() => {
@@ -82,7 +91,7 @@ export async function play (context: BrowserContext, props: Props) {
             retryMutation.observe(retryContainer, {
               attributes: true
             });
-            
+
             // Check confirm dialog if opened
             const confirmDialog = document.querySelector('#confirm-dialog') as HTMLDivElement;
             const confirmMutation = new MutationObserver(() => {
@@ -93,7 +102,7 @@ export async function play (context: BrowserContext, props: Props) {
             confirmMutation.observe(confirmDialog, {
               attributes: true
             });
-    
+
             // Check duplicate dialog if opened
             const duplicateDialog = document.querySelector('#warn-duplicate-contents-msg') as HTMLDivElement;
             const duplicateMutation = new MutationObserver(() => {

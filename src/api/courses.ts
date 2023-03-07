@@ -71,9 +71,89 @@ export type Section = {
   unlock_at: string;
 };
 
+type CourseResponse = {
+  module_id: number;
+  module_items: CourseItem[];
+  position: number;
+  published: any;
+  title: string;
+  unlock_at: any;
+}
+
+type CourseContentDataItem = {
+  course_id: number;
+  created_at: string;
+  description: string;
+  due_at?: any;
+  item_content_data: {
+    content_id: string;
+    content_type: string;
+    created_at: string;
+    file_name: string;
+    progress_support: boolean;
+    thumbnail_url: string;
+    updated_at: string;
+    view_url: string;
+    duration?: number;
+    _id: string;
+  }
+  item_content_id: string;
+  item_content_type: string;
+  item_id: number;
+  late_at?: any;
+  lecture_period_status: string;
+  lesson_position: number;
+  lock_at?: any;
+  opened: boolean;
+  original_item_id: number;
+  published: boolean;
+  title: string;
+  unlock_at?: any;
+  updated_at: string;
+  use_attendance: boolean;
+  week_position: number;
+}
+
+type CourseItem = {
+  content_data?: CourseContentDataItem;
+  content_id: number;
+  content_type: string;
+  indent: number;
+  module_item_id: number;
+  position: number;
+  published?: any;
+  title: string;
+  url: string;
+}
+
+type AttendanceResponse = CourseContentDataItem & {
+  name: string;
+  professors?: string;
+  attendance_data: {
+    attendance_status: string;
+    completed: boolean;
+    last_at: number;
+    progress: number;
+  }
+  viewer_url: string;
+}
+
+export type AttendanceItem = AttendanceResponse & CourseItem
+
 export function components (props: { user_id: string; user_login: string; role: string; token: string, courseId: number; }) {
   const { user_id, user_login, role, token, courseId } = props;
   return api<Component[]>(`/courses/${courseId}/allcomponents_db?user_id=${user_id}&user_login=${user_login}&role=${role}`, token);
+}
+
+// 강의의 모든 주차 학습을 불러옴
+export function getAllCourse (props: { coursesId: number, token: string }) {
+  const { coursesId, token } = props
+  return api<CourseResponse[]>(`/courses/${coursesId}/modules?include_detail=true`, token)
+}
+
+export function getAttendance (props: { courseId: number, itemId: number, token: string }) {
+  const { token, courseId, itemId } = props
+  return api<AttendanceResponse>(`/courses/${courseId}/attendance_items/${itemId}`, token)
 }
 
 export function sections (props: { user_id: string; user_login: string; role: string; token: string, courseId: number; }) {

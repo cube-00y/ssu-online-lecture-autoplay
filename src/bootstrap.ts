@@ -59,15 +59,14 @@ export default async function bootstrap () {
 
             const mainProgress = compomentProgress();
             const uncompletedComponentsList = uncompletedComponents
-            .filter((component) => Boolean(component.commons_content))
             .map((component, index, { length }) => ({
                 component,
                 progress: mainProgress.create({
-                    total: component.commons_content!.duration,
+                    total: component.item_content_data.duration!,
                     index: String(index + 1).padStart(1 + Math.floor(Math.log10(length)), '0'),
                     title: component.title,
-                    category: component.courseName,
-                    status: progressTimeFormat(0, component.commons_content!.duration)
+                    category: component.name,
+                    status: progressTimeFormat(0, component.item_content_data.duration!)
                 })
             }))
 
@@ -79,10 +78,11 @@ export default async function bootstrap () {
                 });
 
                 let playReady = false;
-                `https://canvas.ssu.ac.kr/learningx/coursebuilder/course/${component.courseId}/learn/60858/unit/268399/view?user_id=11854&user_login=20180406&user_name=%EA%B0%95%EB%AF%BC%EC%9A%B0(20%23%23%23%2306)&user_email=minukang5874%40gmail.com&role=1&is_observer=false&locale=ko&mode=default`
+                // `https://canvas.ssu.ac.kr/learningx/coursebuilder/course/${component.course_id}/learn/60858/unit/268399/view?user_id=11854&user_login=20180406&user_name=%EA%B0%95%EB%AF%BC%EC%9A%B0(20%23%23%23%2306)&user_email=minukang5874%40gmail.com&role=1&is_observer=false&locale=ko&mode=default`
+                `${component.viewer_url}`
                 try {
                     await play(context, {
-                        url: component.view_info.view_url,
+                        url: component.viewer_url,
                         onConsole(event: { type: 'intro' | 'end' } | { type: 'timeupdate'; currentTime: number; }) {
                             if (event.type === 'intro') {
                                 playReady = true;

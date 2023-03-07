@@ -16,11 +16,11 @@ export type Authorization = {
 export async function authorization (context: BrowserContext, props: LoginProps): Promise<Authorization> {
   const { id, password } = props;
   const loginPage = await context.newPage();
-  await loginPage.goto(`https://smartid.ssu.ac.kr/Symtra_sso/smln.asp?apiReturnUrl=https%3A%2F%2Fclass.ssu.ac.kr%2Fxn-sso%2Fgw-cb.php`, { waitUntil: 'domcontentloaded' });
+  await loginPage.goto(`https://smartid.ssu.ac.kr/Symtra_sso/smln.asp?apiReturnUrl=https%3A%2F%2Flms.ssu.ac.kr%2Fxn-sso%2Fgw-cb.php`, { waitUntil: 'domcontentloaded' });
   await loginPage.fill('#userid', id);
   await loginPage.fill('#pwd', password);
   await loginPage.click('.btn_login');
-  await loginPage.waitForURL('https://class.ssu.ac.kr/');
+  await loginPage.waitForURL('https://lms.ssu.ac.kr/');
   await loginPage.goto(`https://canvas.ssu.ac.kr/learningx/dashboard?user_login=${id}&locale=ko`);
   const { user_id, user_login, role, cookies } = await loginPage.evaluate(() => {
     const root = document.querySelector('#root') as HTMLElement;
