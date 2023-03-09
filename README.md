@@ -22,3 +22,8 @@ npm start
 ## 듣고싶지 않은 강의 (F를 원하는 강의)가 있을 경우?
 
 `.env` 에 `IGNORE_COURSE_IDS` 에 id값을 "," 로 구분지어 채워 놓습니다. id값은 스마트캠퍼스에서 해당 강의의 url인 "https://canvas.ssu.ac.kr/courses/7819" 에서 "7819" 에 해당하는 부분입니다.
+
+## 강의 배속을 설정하고 싶은 경우?
+
+`.env` 에 `PLAYBACK_LATE` 에 원하는 배속(`0.5` `1.0` `1.25` `1.5` `2.0`)을 채워넣습니다.<br>
+`PLAYBACK_LATE` 변수의 기본값은 `2.0` 입니다.

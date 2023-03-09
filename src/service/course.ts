@@ -20,7 +20,6 @@ export async function getUnCompletedCourseComponents(me: Authorization, ignoreCo
   const onlineCourses = learnstatuses
   .filter(({course_format, id}) => course_format !== 'none' && !ignoreCourseIds?.includes(id))
 
-  // console.log(JSON.stringify(onlineCourses))
   const components = (await Promise.all(
     onlineCourses.map(async course => {
       const courseComponents = await coursesApi.getAllCourse({token: me.token, coursesId: course.id});
@@ -54,8 +53,6 @@ export async function getUnCompletedCourseComponents(me: Authorization, ignoreCo
       } as AttendanceItem
     })
   ))
-
-  console.log(JSON.stringify(resultWithAttendance))
 
   const activeComponents = resultWithAttendance.filter(({content_data}) => {
     return content_data && new Date(content_data.unlock_at) < now && (content_data.due_at === null || now < new Date(content_data.due_at));

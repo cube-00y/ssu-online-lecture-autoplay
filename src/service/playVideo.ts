@@ -25,8 +25,22 @@ export async function play (context: BrowserContext, props: Props) {
   // await secondFrame.waitForLoadState('load');
   // await secondFrame.waitForSelector('.vc-front-screen-play-btn');
   await page.click('.vc-front-screen-play-btn');
+
   try {
     await (await page.$('.vc-pctrl-volume-btn:not(.muted)'))?.click();
+  } catch {}
+
+  try {
+    await page.click('.confirm-ok-btn', { timeout: 10000 });
+  } catch {}
+
+  try {
+    await (await page.$('.vc-pctrl-playback-rate-toggle-btn'))?.click();
+  } catch {}
+
+  try {
+    const playbackRate = process.env.PLAYBACK_LATE || "2.0"
+    await (await page.$(`.vc-pctrl-playback-rate-btn:is(:text("${playbackRate}"))`))?.click();
   } catch {}
   page.on('dialog', async dialog => await dialog.accept());
   page.on('console', async message => {
