@@ -9,6 +9,7 @@ import { play } from './service/playVideo';
 import { compomentProgress } from './helpers/progress';
 import { progressTimeFormat } from './helpers/format';
 import { consoleRewrite } from './helpers/console';
+import {AttendanceItem} from "src/api/courses";
 
 dotenv.config();
 
@@ -49,8 +50,27 @@ export default async function bootstrap () {
         const me = await authorization(context, input);
 
         consoleRewrite('⏳ 강의 정보를 불러오는 중입니다 ...');
+        let uncompletedComponents: AttendanceItem[] | null = null;
+        let count = 0;
 
-        const uncompletedComponents = await getUnCompletedCourseComponents(me, ignoreCourseIds);
+        while (true) {
+          try {
+            const result = await getUnCompletedCourseComponents(me, ignoreCourseIds);
+
+            if (result) {
+              uncompletedComponents = result;
+            }
+            break
+          } catch (e) {
+            count += 1;
+            consoleRewrite(`미수강 현재 주차 강의를 불러오지 못했습니다. ${count}회 째 재시도 중 ...`);
+          }
+        }
+
+        if (!uncompletedComponents) {
+          consoleRewrite(`미수강 현재 주차 강의를 불러오지 못했습니다.`);
+          return
+        }
 
         consoleRewrite(`👀 총 ${uncompletedComponents.length}개의 미수강 현재 주차 강의가 있습니다.`);
 
